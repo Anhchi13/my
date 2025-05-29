@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>MY LOVE</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      touch-action: none;
+    }
+
+    .scene {
+      width: 100vw;
+      height: 100vh;
+      perspective: 1600px;
+      overflow: hidden;
+    }
+
+    .container {
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      position: relative;
+    }
+
+    .falling {
+      position: absolute;
+      white-space: nowrap;
+      font-weight: 900;
+      pointer-events: none;
+      animation: fall 6s ease-out forwards;
+
+      /* 👇 Cải tiến hiệu ứng chiều sâu */
+      color: #fff;
+      text-shadow:
+        0 1px 0 #ff66cc,
+        0 2px 0 #ff3399,
+        0 3px 0 #cc0066,
+        0 4px 1px rgba(0,0,0,0.4),
+        0 6px 5px rgba(0,0,0,0.3),
+        0 8px 10px rgba(0,0,0,0.2),
+        0 10px 20px rgba(255,20,147,0.5),
+        0 12px 30px rgba(255,182,193,0.6);
+      transform-origin: center;
+    }
+
+    @keyframes fall {
+      0% {
+        top: -50px;
+        opacity: 0;
+        transform: translateZ(0px) scale(0.9);
+      }
+      10% {
+        opacity: 1;
+      }
+      100% {
+        top: 100vh;
+        opacity: 0;
+        transform: translateZ(-500px) scale(1.1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="scene" id="scene">
+    <div class="container" id="container"></div>
+  </div>
+
+  <script>
+    const phrases = [
+      "IU THẢO 💕",
+      "Love u forever ❤️",
+      "NGUYỄN THỊ THẢO 💖",
+      "Tình yêu vĩnh cửu 💗",
+      "💓💓💓"
+    ];
+
+    const container = document.getElementById("container");
+
+    function createFallingText() {
+      const el = document.createElement("div");
+      el.classList.add("falling");
+      el.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+
+      const fontSize = Math.random() * 20 + 28;
+      const left = Math.random() * 90;
+      const z = Math.random() * 600 - 300;
+
+      el.style.fontSize = `${fontSize}px`;
+      el.style.left = `${left}vw`;
+      el.style.transform = `translateZ(${z}px)`;
+
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 6000);
+    }
+
+    setInterval(createFallingText, 120);
+
+    // Xoay 3D bằng tay
+    let isDragging = false;
+    let lastX, lastY;
+    let rotateX = 0, rotateY = 0;
+    const scene = document.getElementById('scene');
+
+    function updateRotation() {
+      container.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    }
+
+    scene.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+    });
+
+    scene.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      rotateY += dx * 0.3;
+      rotateX -= dy * 0.3;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      updateRotation();
+    });
+
+    scene.addEventListener('mouseup', () => isDragging = false);
+    scene.addEventListener('mouseleave', () => isDragging = false);
+
+    // Xoay cảm ứng
+    scene.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      lastX = e.touches[0].clientX;
+      lastY = e.touches[0].clientY;
+    });
+
+    scene.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      const dx = e.touches[0].clientX - lastX;
+      const dy = e.touches[0].clientY - lastY;
+      rotateY += dx * 0.3;
+      rotateX -= dy * 0.3;
+      lastX = e.touches[0].clientX;
+      lastY = e.touches[0].clientY;
+      updateRotation();
+    });
+
+    scene.addEventListener('touchend', () => isDragging = false);
+  </script>
+</body>
+</html>
